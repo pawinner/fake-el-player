@@ -7,30 +7,48 @@ import 'videojs-hotkeys';
 import 'videojs-overlay';
 import 'videojs-youtube';
 import Checkbox from './Checkbox.vue';
+import NextVideoModal from './NextVideoModal.vue';
+import { NEXT_VIDEO_URL } from '../config';
 import { ProgressItem } from '../types';
 
-defineEmits(['back']);
+const emit = defineEmits(['back', 'play-next']);
 const props = defineProps<{
   source: Partial<ProgressItem> & {
     src: string;
     type?: string;
+    autoplay?: boolean;
   };
 }>();
 const playerEl = ref<Element | null>(null);
+const showNextVideoModal = ref(false);
 let player: any;
 let playerOverlayInterface: any;
 let startTime: number | null;
 let ticker: number | undefined;
 const startClock = ref<String | null>(null);
 onMounted(() => {
+  const isYouTube = Boolean(
+    props.source.type === 'video/youtube' ||
+      props.source.src.includes('youtube.com') ||
+      props.source.src.includes('youtu.be'),
+  );
   const source = {
     src: props.source.src,
-    type: props.source.type ?? null,
+    type: props.source.type ?? (isYouTube ? 'video/youtube' : null),
   };
   player = videojs(
     playerEl.value!,
     {
       aspectRatio: '1280:640',
+      autoplay: props.source.autoplay ? 'any' : false,
+      techOrder: isYouTube ? ['youtube', 'html5'] : ['html5', 'youtube'],
+      youtube: {
+        ytControls: 0,
+        autoplay: props.source.autoplay ? 1 : 0,
+        customVars: {
+          autoplay: props.source.autoplay ? 1 : 0,
+        },
+      },
       controlBar: {
         skipButtons: {
           forward: 10,
@@ -41,7 +59,26 @@ onMounted(() => {
       sources: [source],
     },
     () => {
-      player.src(source);
+      if (!isYouTube) {
+        player.src(source);
+      }
+      if (props.source.autoplay) {
+        const tryPlay = () => {
+          const promise = player.play();
+          if (promise && typeof promise.then === 'function') {
+            promise.catch(() => {
+              // If unmuted playback is restricted by browser autoplay policy, mute and play
+              player.muted(true);
+              player.play();
+            });
+          }
+        };
+
+        tryPlay();
+        player.one('canplay', tryPlay);
+        player.one('loadedmetadata', tryPlay);
+        player.one('loadeddata', tryPlay);
+      }
       player.hotkeys({
         volumeStep: 0.1,
         seekStep: 5,
@@ -111,6 +148,16 @@ onMounted(() => {
           localStorage.setItem('ProgressSave-v1', JSON.stringify(progressList));
         }
       });
+      player.on('ended', () => {
+        if (NEXT_VIDEO_URL) {
+          if (player.isFullscreen && player.isFullscreen()) {
+            try {
+              player.exitFullscreen();
+            } catch (_) {}
+          }
+          showNextVideoModal.value = true;
+        }
+      });
       if (props.source.currentTime) {
         player.currentTime(props.source.currentTime);
       }
@@ -126,6 +173,7 @@ onMounted(() => {
     .addEventListener('keyup', keyToggleClock);
 });
 onBeforeUnmount(() => {
+  showNextVideoModal.value = false;
   if (player) {
     player.dispose();
   }
@@ -263,6 +311,15 @@ switch (import.meta.env.VITE_SPECIAL_DAY) {
   default:
     break;
 }
+
+const handleCancelNextVideo = () => {
+  showNextVideoModal.value = false;
+};
+
+const handleConfirmNextVideo = () => {
+  showNextVideoModal.value = false;
+  emit('play-next', NEXT_VIDEO_URL);
+};
 </script>
 
 <template>
@@ -270,8 +327,10 @@ switch (import.meta.env.VITE_SPECIAL_DAY) {
     ref="playerEl"
     class="video-js vjs-default-skin vjs-big-play-centered w-max"
     controls
-    preload="metadata"
-    :poster="posterOrigin"
+    :preload="props.source.autoplay ? 'auto' : 'metadata'"
+    :poster="props.source.autoplay ? '' : posterOrigin"
+    :autoplay="props.source.autoplay"
+    playsinline
   >
     Your browser does not support the video tag.
   </video>
@@ -339,4 +398,9 @@ switch (import.meta.env.VITE_SPECIAL_DAY) {
       Back</a
     >
   </div>
+  <NextVideoModal
+    :show="showNextVideoModal"
+    @cancel="handleCancelNextVideo"
+    @confirm="handleConfirmNextVideo"
+  />
 </template>

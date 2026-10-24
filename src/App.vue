@@ -18,25 +18,33 @@ import NoticeModal from './components/NoticeModal.vue';
 import { IS_SITE_OPEN, OFFICIAL_SITE_URL } from './config';
 import { ProgressItem } from './types';
 
+const playerKey = ref(0);
+
 const source = ref<{
   src: string;
   type?: string;
   currentTime?: number;
+  autoplay?: boolean;
 } | null>(null);
-const processUrl = (rawInput: string | { src: string } | null) => {
+const processUrl = (
+  rawInput: string | { src: string; autoplay?: boolean } | null,
+  autoplay = false,
+) => {
+  playerKey.value++;
   let input: {
     src: string;
     type?: string;
     currentTime?: number;
+    autoplay?: boolean;
   } | null = null;
   if (rawInput && (typeof rawInput === 'object' || isValidHttpUrl(rawInput))) {
     if (typeof rawInput === 'object') {
-      input = rawInput;
+      input = { ...rawInput, autoplay: autoplay || rawInput.autoplay };
     } else {
       // Transform URL input
       const urlInput = new URL(rawInput);
       if (rawInput.includes('.mp4')) {
-        input = { src: rawInput, type: 'video/mp4' };
+        input = { src: rawInput, type: 'video/mp4', autoplay };
       } else {
         if (rawInput.includes('aculearn-idm/')) {
           input = {
@@ -49,6 +57,7 @@ const processUrl = (rawInput: string | { src: string } | null) => {
               (rawInput.includes('/v7/') ? '2' : '1') +
               '.mp4',
             type: 'video/mp4',
+            autoplay,
           };
         } else if (rawInput.includes('aculearn-me/')) {
           input = {
@@ -61,6 +70,7 @@ const processUrl = (rawInput: string | { src: string } | null) => {
               (rawInput.includes('/v7/') ? '2' : '1') +
               '.mp4',
             type: 'video/mp4',
+            autoplay,
           };
         } else if (
           rawInput.startsWith('https://drive.google.com/open?') ||
@@ -73,6 +83,7 @@ const processUrl = (rawInput: string | { src: string } | null) => {
                 'https://drive.google.com/uc?export=download&id=' +
                 fileIds[0].replace(/\//g, ''),
               type: 'video/mp4',
+              autoplay,
             };
           }
         } else if (
@@ -81,7 +92,9 @@ const processUrl = (rawInput: string | { src: string } | null) => {
           )
         ) {
           // YouTube URL
-          input = { src: rawInput, type: 'video/youtube' };
+          input = { src: rawInput, type: 'video/youtube', autoplay };
+        } else {
+          input = { src: rawInput, autoplay };
         }
       }
     }
@@ -215,6 +228,10 @@ const toggleRename = () => {
   renameState.value = !renameState.value;
 };
 
+const playNextVideo = (nextUrl: string) => {
+  processUrl(nextUrl, true);
+};
+
 const theme = import.meta.env.VITE_SPECIAL_DAY
 </script>
 
@@ -323,7 +340,13 @@ const theme = import.meta.env.VITE_SPECIAL_DAY
             </div>
           </div>
         </div>
-        <Player v-if="source" :source="source" @back="processUrl(null)" />
+        <Player
+          v-if="source"
+          :key="playerKey"
+          :source="source"
+          @back="processUrl(null)"
+          @play-next="playNextVideo"
+        />
         <Home v-else @submit="processUrl" />
       </div>
 

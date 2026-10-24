@@ -6,4 +6,5 @@ export type ProgressItem = {
   playbackRate?: number;
   thumbnail?: string | null;
   name?: string;
+  autoplay?: boolean;
 };

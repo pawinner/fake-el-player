@@ -11,3 +11,15 @@ export const IS_SITE_OPEN: boolean =
   String(import.meta.env.VITE_SITE_OPEN ?? 'true').toLowerCase() === 'true';
 
 export const OFFICIAL_SITE_URL = 'https://player.docchula.com/';
+
+/**
+ * Next Video Configuration
+ *
+ * Controlled via environment variable `VITE_NEXT_VIDEO_URL`.
+ * If set, a modal countdown will appear when any video finishes playing,
+ * prompting the user that "Something interesting is coming up...".
+ * If not cancelled, it will automatically switch and play this URL.
+ */
+export const NEXT_VIDEO_URL: string = (
+  import.meta.env.VITE_NEXT_VIDEO_URL ?? ''
+).trim();
