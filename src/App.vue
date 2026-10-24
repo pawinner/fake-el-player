@@ -14,6 +14,7 @@ import {
   XMarkIcon,
 } from '@heroicons/vue/20/solid';
 import BookmarkModal from './components/BookmarkModal.vue';
+import NoticeModal from './components/NoticeModal.vue';
 import { ProgressItem } from './types';
 
 const source = ref<{
@@ -126,6 +127,7 @@ const toggleLockTheme = () => {
   localStorage.setItem('lockTheme', lockTheme.value);
 };
 const showBookmarkModal = ref(false);
+const showNoticeModal = ref(true);
 const isValidHttpUrl = (string: string) => {
   let url;
   try {
@@ -354,6 +356,11 @@ const theme = import.meta.env.VITE_SPECIAL_DAY
         <p>
           Created with ❤ by Keen&nbsp;|&nbsp;
           <a
+            class="cursor-pointer text-slate-300 hover:text-gray-400 hover:underline dark:text-slate-500 dark:hover:text-gray-300"
+            @click="showNoticeModal = true"
+            >Notice</a
+          >&nbsp;|&nbsp;
+          <a
             class="text-slate-300 hover:text-gray-400 hover:underline dark:text-slate-500 dark:hover:text-gray-300"
             href="https://github.com/docchula/el-player"
             target="_blank"
@@ -388,4 +395,5 @@ const theme = import.meta.env.VITE_SPECIAL_DAY
     </div>
   </div>
   <BookmarkModal :show="showBookmarkModal" @close="showBookmarkModal = false" />
+  <NoticeModal :show="showNoticeModal" @close="showNoticeModal = false" />
 </template>
