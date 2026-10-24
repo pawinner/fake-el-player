@@ -13,7 +13,7 @@ const props = defineProps({
   },
   countdownDuration: {
     type: Number,
-    default: 5,
+    default: 3,
   },
 });
 

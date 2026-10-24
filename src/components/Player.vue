@@ -8,7 +8,7 @@ import 'videojs-overlay';
 import 'videojs-youtube';
 import Checkbox from './Checkbox.vue';
 import NextVideoModal from './NextVideoModal.vue';
-import { NEXT_VIDEO_URL } from '../config';
+import { IS_AUTOPLAY_ENABLED, NEXT_VIDEO_URL } from '../config';
 import { ProgressItem } from '../types';
 
 const emit = defineEmits(['back', 'play-next']);
@@ -149,7 +149,7 @@ onMounted(() => {
         }
       });
       player.on('ended', () => {
-        if (NEXT_VIDEO_URL) {
+        if (IS_AUTOPLAY_ENABLED && NEXT_VIDEO_URL) {
           if (player.isFullscreen && player.isFullscreen()) {
             try {
               player.exitFullscreen();

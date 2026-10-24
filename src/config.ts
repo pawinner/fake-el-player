@@ -13,6 +13,16 @@ export const IS_SITE_OPEN: boolean =
 export const OFFICIAL_SITE_URL = 'https://player.docchula.com/';
 
 /**
+ * Autoplay Configuration
+ *
+ * Controlled strictly via environment variable `VITE_AUTOPLAY`.
+ * - TRUE / true  : Autoplay enabled (modal countdown appears when video finishes).
+ * - FALSE / false : Autoplay disabled (when video ends, nothing happens).
+ */
+export const IS_AUTOPLAY_ENABLED: boolean =
+  String(import.meta.env.VITE_AUTOPLAY ?? 'true').toLowerCase() === 'true';
+
+/**
  * Next Video Configuration
  *
  * Controlled via environment variable `VITE_NEXT_VIDEO_URL`.

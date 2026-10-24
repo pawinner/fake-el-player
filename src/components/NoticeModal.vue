@@ -244,7 +244,7 @@ const maxWidthClass = computed(() => {
                     >
                       {{
                         isOpen
-                          ? 'IMPORTANT !!!'
+                          ? 'ATTENTION !!!'
                           : 'player.docchula.com is Back Online!'
                       }}
                     </h3>
@@ -273,7 +273,7 @@ const maxWidthClass = computed(() => {
                         first!
                       </p>
                       <p class="text-xs text-gray-500 dark:text-gray-400">
-                        This is a backup cloned from
+                        This is a clone of
                         <a
                           href="https://github.com/docchula/el-player"
                           target="_blank"
@@ -282,13 +282,13 @@ const maxWidthClass = computed(() => {
                         >
                           docchula/el-player
                         </a>.
-                        All credits and original work belong to the Docchula team.
-                        For inquiries or more information, please contact
+                        All credits and original work belong to the original developer.
+                        For more information, please contact
                         <a
-                          href="mailto:it.division@docchula.com"
+                          href="mailto:itdivision@docchula.com"
                           class="font-medium text-primary-600 underline hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                         >
-                          it.division@docchula.com
+                          itdivision@docchula.com
                         </a>.
                       </p>
                     </div>
