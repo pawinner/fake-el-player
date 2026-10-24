@@ -138,15 +138,7 @@ const maxWidthClass = computed(() => {
                     </h3>
                     <div class="mt-3 space-y-3 text-sm text-gray-600 dark:text-gray-300">
                       <p>
-                        This is a backup cloned from
-                        <a
-                          href="https://github.com/docchula/el-player"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="font-medium text-primary-600 underline hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-                        >
-                          docchula/el-player
-                        </a>.
+                        This site is intended for <strong>backup use only</strong>.
                       </p>
                       <p class="text-base sm:text-lg font-bold text-gray-900 dark:text-white py-0.5">
                         Please visit
@@ -160,10 +152,16 @@ const maxWidthClass = computed(() => {
                         </a>
                         first!
                       </p>
-                      <p>
-                        This site is intended for <strong>backup use only</strong>.
-                      </p>
                       <p class="text-xs text-gray-500 dark:text-gray-400">
+                        This is a backup cloned from
+                        <a
+                          href="https://github.com/docchula/el-player"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="font-medium text-primary-600 underline hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                        >
+                          docchula/el-player
+                        </a>.
                         All credits and original work belong to the Docchula team. For inquiries or more information, please contact
                         <a
                           href="mailto:it.division@docchula.com"
