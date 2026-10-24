@@ -15,6 +15,7 @@ import {
 } from '@heroicons/vue/20/solid';
 import BookmarkModal from './components/BookmarkModal.vue';
 import NoticeModal from './components/NoticeModal.vue';
+import { IS_SITE_OPEN, OFFICIAL_SITE_URL } from './config';
 import { ProgressItem } from './types';
 
 const source = ref<{
@@ -187,16 +188,19 @@ const progressDelete = (progress: ProgressItem) => {
 };
 const hideProgress = ref<boolean>(false);
 onMounted(() => {
+  if (lockTheme.value === 'true-dark') {
+    document.documentElement.classList.add('dark');
+  } else if (lockTheme.value === 'true-light') {
+    document.documentElement.classList.remove('dark');
+  }
+  if (!IS_SITE_OPEN) {
+    return;
+  }
   if (window.location.search.includes('url=')) {
     const urlInput = new URL(window.location.href);
     processUrl(urlInput.searchParams.get('url'));
   } else if (window.location.href.includes('aculearn-')) {
     processUrl(window.location.href);
-  }
-  if (lockTheme.value === 'true-dark') {
-    document.documentElement.classList.add('dark');
-  } else if (lockTheme.value === 'true-light') {
-    document.documentElement.classList.remove('dark');
   }
 });
 
@@ -395,5 +399,11 @@ const theme = import.meta.env.VITE_SPECIAL_DAY
     </div>
   </div>
   <BookmarkModal :show="showBookmarkModal" @close="showBookmarkModal = false" />
-  <NoticeModal :show="showNoticeModal" @close="showNoticeModal = false" />
+  <NoticeModal
+    :show="showNoticeModal"
+    :is-open="IS_SITE_OPEN"
+    :closeable="IS_SITE_OPEN"
+    :redirect-url="OFFICIAL_SITE_URL"
+    @close="IS_SITE_OPEN ? (showNoticeModal = false) : null"
+  />
 </template>
